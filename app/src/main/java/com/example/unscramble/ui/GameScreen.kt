@@ -16,6 +16,8 @@
 package com.example.unscramble.ui
 
 import android.app.Activity
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -60,6 +62,7 @@ import com.example.unscramble.ui.theme.UnscrambleTheme
 
 @Composable
 fun GameScreen() {
+    val context = LocalContext.current
     var gameViewModel: GameViewModel = viewModel()
 
     //It ensures that whenever there is a change in the "uiState" value, recomposition occurs
@@ -88,6 +91,7 @@ fun GameScreen() {
         )
         GameLayout(
             currentScrambledWord = gameUiState.currentScrambledWord,
+            hint=gameViewModel.getHint(),
             isGuessWrong = gameUiState.isGuessedWordWrong,
             userGuess = gameViewModel.userGuess,
             wordCount=gameUiState.currentWordCount,
@@ -119,7 +123,11 @@ fun GameScreen() {
             }
 
             OutlinedButton(
-                onClick = { gameViewModel.skipWord()  },
+                onClick = {
+                    val text=gameUiState.currentScrambledWord+" = "+ gameViewModel.getCurrentWord()
+                    Toast.makeText(context,text,Toast.LENGTH_SHORT).show()
+
+                    gameViewModel.skipWord()  },
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(
@@ -155,6 +163,7 @@ fun GameStatus(score: Int, modifier: Modifier = Modifier) {
 @Composable
 fun GameLayout(
     currentScrambledWord: String,
+    hint: String,
     isGuessWrong: Boolean,
     userGuess: String,
     wordCount: Int,
@@ -187,6 +196,9 @@ fun GameLayout(
                 text = currentScrambledWord,
                 fontSize = 45.sp,
                 modifier=Modifier.align(Alignment.CenterHorizontally)
+            )
+            Text(
+                text = hint
             )
             Text(
                 text = stringResource(R.string.instructions),

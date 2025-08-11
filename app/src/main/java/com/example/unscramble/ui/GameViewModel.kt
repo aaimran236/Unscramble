@@ -10,6 +10,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
 import com.example.unscramble.data.MAX_NO_OF_WORDS
 import com.example.unscramble.data.SCORE_INCREASE
+import com.example.unscramble.data.wordHintsMap
 import kotlinx.coroutines.flow.update
 
 class GameViewModel : ViewModel() {
@@ -29,8 +30,18 @@ class GameViewModel : ViewModel() {
     var userGuess by mutableStateOf("")
         private set
 
+    private var hintWord: String ?=""
+
     fun updateUserGuess(guessedWord: String){
         userGuess = guessedWord
+    }
+
+    fun getCurrentWord() : String{
+        return currentWord
+    }
+
+    fun getHint() : String {
+        return "Hint: $hintWord"
     }
 
     fun checkUserGuess() {
@@ -77,6 +88,10 @@ class GameViewModel : ViewModel() {
     private fun pickRandomWordAndShuffle(): String{
         currentWord= allWords.random()
 
+        ///collecting the hit for the word
+        hintWord= wordHintsMap[currentWord]
+
+
         if (usedWords.contains(currentWord)){
             return pickRandomWordAndShuffle()
         }else{
@@ -100,7 +115,10 @@ class GameViewModel : ViewModel() {
 
 
     fun resetGame(){
-        usedWords.clear()
+        if (usedWords.size==allWords.size){
+            usedWords.clear()
+        }
+
         _uiState.value= GameUiState(currentScrambledWord =pickRandomWordAndShuffle())
     }
 
